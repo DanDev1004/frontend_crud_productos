@@ -1,92 +1,50 @@
 
-# Backend — CRUD de Productos y Categorías
+# Frontend — CRUD de Productos y Categorías
 
-API REST desarrollada con **Laravel y MySQL**. Permite listar, crear, consultar, editar y eliminar lógicamente productos y categorías. Incluye validaciones, auditoría de cambios y documentación Swagger.
+Interfaz web desarrollada con **Vue 3 + Vite**, con navegación entre vistas y formularios para administrar productos y categorías mediante la API Laravel.
 
 ## Requisitos
 
--   **Docker Desktop** instalado y en ejecución.
--   Puertos **8000** (API) y **3307** (MySQL, desde el equipo) disponibles.
-
-No es necesario instalar PHP, Composer ni MySQL en el equipo.
+-   **Node.js** y **npm** instalados (recomendado Node.js 22 o superior compatible con Vite).
+-   El **backend Laravel** iniciado en `http://localhost:8000`.
 
 ## Cómo ejecutarlo
 
-Abrir una terminal en la carpeta raíz de este repositorio.
-
-**1. Crear el archivo de configuración:**
-
-En **PowerShell (Windows)**:
+Abrir una terminal en la carpeta raíz de este repositorio y ejecutar:
 
 ```
-Copy-Item .env.example .env
+npm install
+npm run dev
 ```
 
-En **Linux/macOS**:
+Abrir en el navegador:
+
+**[http://localhost:5173](http://localhost:5173)**
+
+> No hace falta Docker para el frontend. Mantén la terminal de Vite abierta mientras utilizas la aplicación.
+
+## Conexión con el backend
+
+La API debe estar disponible en:
 
 ```
-cp .env.example .env
+http://localhost:8000/api
 ```
 
-**2. Configurar la base de datos** en `.env`:
+Si el backend utiliza otro puerto o dirección, revisa la URL de conexión en `src/services/api.ts` (o el archivo de configuración de API equivalente del proyecto).
 
-```
-APP_URL=http://localhost:8000
-DB_CONNECTION=mysql
-DB_HOST=mysql
-DB_PORT=3306
-DB_DATABASE=productos_db
-DB_USERNAME=productos_user
-DB_PASSWORD=productos_password
-MYSQL_ROOT_PASSWORD=root_local_123
-```
+## Funcionalidades
 
-> Estas credenciales son únicamente para el entorno de desarrollo local. Si se usan otras, deben coincidir con las configuradas en `docker-compose.yml`.
-
-**3. Construir e iniciar los contenedores:**
-
-```
-docker compose up -d --build
-```
-
-**4. Preparar Laravel y cargar los datos de ejemplo:**
-
-```
-docker compose exec app php artisan key:generate
-docker compose exec app php artisan migrate --seed
-docker compose exec app php artisan l5-swagger:generate
-```
-
-## URLs
-
-Servicio
-
-Dirección
-
-API — Productos
-
-[http://localhost:8000/api/products](http://localhost:8000/api/products)
-
-API — Categorías
-
-[http://localhost:8000/api/categories](http://localhost:8000/api/categories)
-
-Documentación Swagger
-
-[http://localhost:8000/api/docs](http://localhost:8000/api/docs)
-
-MySQL desde el equipo
-
-`127.0.0.1:3307`
-
-La API devuelve JSON con las claves `success`, `message` y `data` o `errors`. Las eliminaciones son lógicas (`deleted_at`) y la auditoría se registra en la tabla `activity_log`.
+-   Pantalla principal.
+-   Listado de productos y categorías.
+-   Creación, edición y eliminación de registros.
+-   Formularios con validaciones y avisos de error o éxito.
 
 ## Comandos útiles
 
 ```
-docker compose ps                # Ver estado
-docker compose logs -f app       # Ver logs de Laravel
-docker compose down              # Detener sin borrar los datos
+npm run dev      # Iniciar en desarrollo
+npm run build    # Generar compilación de producción
 ```
 
-La base de datos se conserva en un volumen Docker. Para reiniciar datos de prueba en una instalación existente, no es necesario borrar el volumen: se pueden usar las migraciones y seeders según corresponda.
+Para detener el servidor de desarrollo, presiona **Ctrl + C** en la terminal.

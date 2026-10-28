@@ -1,42 +1,92 @@
-# frontend_crud_productos
 
-This template should help get you started developing with Vue 3 in Vite.
+# Backend — CRUD de Productos y Categorías
 
-## Recommended IDE Setup
+API REST desarrollada con **Laravel y MySQL**. Permite listar, crear, consultar, editar y eliminar lógicamente productos y categorías. Incluye validaciones, auditoría de cambios y documentación Swagger.
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Requisitos
 
-## Recommended Browser Setup
+-   **Docker Desktop** instalado y en ejecución.
+-   Puertos **8000** (API) y **3307** (MySQL, desde el equipo) disponibles.
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+No es necesario instalar PHP, Composer ni MySQL en el equipo.
 
-## Type Support for `.vue` Imports in TS
+## Cómo ejecutarlo
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+Abrir una terminal en la carpeta raíz de este repositorio.
 
-## Customize configuration
+**1. Crear el archivo de configuración:**
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+En **PowerShell (Windows)**:
 
-## Project Setup
-
-```sh
-npm install
+```
+Copy-Item .env.example .env
 ```
 
-### Compile and Hot-Reload for Development
+En **Linux/macOS**:
 
-```sh
-npm run dev
+```
+cp .env.example .env
 ```
 
-### Type-Check, Compile and Minify for Production
+**2. Configurar la base de datos** en `.env`:
 
-```sh
-npm run build
 ```
+APP_URL=http://localhost:8000
+DB_CONNECTION=mysql
+DB_HOST=mysql
+DB_PORT=3306
+DB_DATABASE=productos_db
+DB_USERNAME=productos_user
+DB_PASSWORD=productos_password
+MYSQL_ROOT_PASSWORD=root_local_123
+```
+
+> Estas credenciales son únicamente para el entorno de desarrollo local. Si se usan otras, deben coincidir con las configuradas en `docker-compose.yml`.
+
+**3. Construir e iniciar los contenedores:**
+
+```
+docker compose up -d --build
+```
+
+**4. Preparar Laravel y cargar los datos de ejemplo:**
+
+```
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate --seed
+docker compose exec app php artisan l5-swagger:generate
+```
+
+## URLs
+
+Servicio
+
+Dirección
+
+API — Productos
+
+[http://localhost:8000/api/products](http://localhost:8000/api/products)
+
+API — Categorías
+
+[http://localhost:8000/api/categories](http://localhost:8000/api/categories)
+
+Documentación Swagger
+
+[http://localhost:8000/api/docs](http://localhost:8000/api/docs)
+
+MySQL desde el equipo
+
+`127.0.0.1:3307`
+
+La API devuelve JSON con las claves `success`, `message` y `data` o `errors`. Las eliminaciones son lógicas (`deleted_at`) y la auditoría se registra en la tabla `activity_log`.
+
+## Comandos útiles
+
+```
+docker compose ps                # Ver estado
+docker compose logs -f app       # Ver logs de Laravel
+docker compose down              # Detener sin borrar los datos
+```
+
+La base de datos se conserva en un volumen Docker. Para reiniciar datos de prueba en una instalación existente, no es necesario borrar el volumen: se pueden usar las migraciones y seeders según corresponda.
